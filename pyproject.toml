@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terminal-animations"
+version = "0.1.0"
+description = "Animated Fastfetch logos for interactive Bash terminals"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{name = "Araragi234"}]
+keywords = ["fastfetch", "terminal", "animation", "bash", "gif", "linux"]
+dependencies = [
+  "Pillow>=10.0",
+  "pyte>=0.8.2",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Topic :: Terminals",
+  "Topic :: Utilities",
+]
+
+[project.scripts]
+terminal-animations = "interactive_shell:main"
+ta-manager = "manage_animations:main"
+
+[tool.setuptools]
+py-modules = ["interactive_shell", "manage_animations"]
+packages = ["engine"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]
+
+[project.urls]
+Homepage = "https://github.com/Araragi234/Terminal-Animation"
+Repository = "https://github.com/Araragi234/Terminal-Animation"
+Issues = "https://github.com/Araragi234/Terminal-Animation/issues"
