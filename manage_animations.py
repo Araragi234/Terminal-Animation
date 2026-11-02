@@ -222,5 +222,34 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def _alias_entrypoint(command: str) -> int:
+    """Run a manager subcommand through its dedicated console script."""
+    return main([command, *sys.argv[1:]])
+
+
+def import_cli() -> int:
+    return _alias_entrypoint("import")
+
+
+def list_cli() -> int:
+    return _alias_entrypoint("list")
+
+
+def default_cli() -> int:
+    return _alias_entrypoint("default")
+
+
+def random_cli() -> int:
+    return _alias_entrypoint("random")
+
+
+def clear_default_cli() -> int:
+    return _alias_entrypoint("clear-default")
+
+
+def help_cli() -> int:
+    return _alias_entrypoint("help")
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

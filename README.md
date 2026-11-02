@@ -28,7 +28,7 @@ pipx install terminal-animations
 The [Fedora RPM workflow](https://github.com/Araragi234/Terminal-Animation/actions/workflows/build-rpm.yml) builds a noarch RPM and runs the package tests. Download the `terminal-animations-fedora-44-rpm` artifact from a successful workflow run, extract it, then install it with DNF:
 
 ```bash
-sudo dnf install ./terminal-animations-0.1.0-1.fc44.noarch.rpm
+sudo dnf install ./terminal-animations-0.1.0-2.fc44.noarch.rpm
 ```
 
 DNF resolves Pillow and pyte from Fedora's repositories. This is a local RPM install; a public COPR repository is not configured yet. After installation, add the launcher and command functions from [`bashrc-integration.sh`](bashrc-integration.sh) to `~/.bashrc` as described below.
@@ -45,7 +45,7 @@ python -m pip install -e .
 
 Add the startup launcher block from [`bashrc-integration.sh`](bashrc-integration.sh) immediately before the existing `fastfetch` command in `~/.bashrc`. Keep that existing Fastfetch command. Add the management functions from the same file to `~/.bashrc` as well. Back up the file first and test in a new terminal window.
 
-For a packaged installation, `terminal-animations` and `ta-manager` are installed as commands. The Bash snippet also supports the source-checkout fallback shown above. In addition to the short Bash functions, the `ta-manager` executable accepts the `ta-*` aliases shown by `ta-help`.
+For a packaged installation, `terminal-animations`, `ta-manager`, and each `ta-*` management command are installed as executables. The Bash snippet is needed for automatic startup integration; the management commands work without adding the snippet to `~/.bashrc`. It also supports the source-checkout fallback shown above.
 
 ## Commands
 
