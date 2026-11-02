@@ -1,0 +1,50 @@
+name: Fedora RPM
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-fedora-44:
+    runs-on: ubuntu-24.04
+    container: fedora:44
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install RPM build tools and project dependencies
+        run: >-
+          dnf install -y rpm-build python3-devel pyproject-rpm-macros
+          python3-build python3-pytest python3-pillow python3-pyte
+          python3-setuptools python3-wheel
+
+      - name: Prepare source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          topdir="$RUNNER_TEMP/rpmbuild"
+          source_root="$RUNNER_TEMP/source/terminal-animations-0.1.0"
+          mkdir -p "$topdir"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} "$source_root"
+          tar --exclude='./.git' --exclude='./dist' --exclude='./build' -cf - . \
+            | tar -C "$source_root" -xf -
+          tar -C "$RUNNER_TEMP/source" -czf \
+            "$topdir/SOURCES/terminal-animations-0.1.0.tar.gz" \
+            terminal-animations-0.1.0
+          echo "RPM_TOPDIR=$topdir" >> "$GITHUB_ENV"
+
+      - name: Build and test RPM
+        run: rpmbuild -bb --define "_topdir $RPM_TOPDIR" packaging/fedora/terminal-animations.spec
+
+      - name: Collect RPM
+        run: |
+          mkdir -p dist
+          cp "$RPM_TOPDIR"/RPMS/noarch/terminal-animations-*.rpm dist/
+          rpm -qip dist/terminal-animations-*.rpm
+          rpm -qlp dist/terminal-animations-*.rpm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terminal-animations-fedora-44-rpm
+          path: dist/terminal-animations-*.rpm
+          if-no-files-found: error

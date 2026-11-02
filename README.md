@@ -23,7 +23,15 @@ Once published to PyPI, the recommended generic Linux install will be:
 pipx install terminal-animations
 ```
 
-For Fedora, the planned distribution route is a COPR RPM repository. The repository name and install command will be added after the first published build.
+### Fedora 44 RPM
+
+The [Fedora RPM workflow](https://github.com/Araragi234/Terminal-Animation/actions/workflows/build-rpm.yml) builds a noarch RPM and runs the package tests. Download the `terminal-animations-fedora-44-rpm` artifact from a successful workflow run, extract it, then install it with DNF:
+
+```bash
+sudo dnf install ./terminal-animations-0.1.0-1.fc44.noarch.rpm
+```
+
+DNF resolves Pillow and pyte from Fedora's repositories. This is a local RPM install; a public COPR repository is not configured yet. After installation, add the launcher and command functions from [`bashrc-integration.sh`](bashrc-integration.sh) to `~/.bashrc` as described below.
 
 For a development checkout:
 
