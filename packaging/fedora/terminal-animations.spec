@@ -44,6 +44,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{buildroot}%{_bindir}/ta-manager help
 
 %files -f %{pyproject_files}
+%{_bindir}/ta-manager
+%{_bindir}/terminal-animations
 %doc README.md docs/license-notice.md bashrc-integration.sh
 
 %changelog
