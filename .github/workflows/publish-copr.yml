@@ -1,0 +1,58 @@
+name: Publish Fedora RPM to COPR
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit-source-rpm:
+    runs-on: ubuntu-24.04
+    container: fedora:44
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install COPR and RPM build tools
+        run: dnf install -y copr-cli rpm-build tar
+
+      - name: Build source RPM
+        shell: bash
+        run: |
+          set -euo pipefail
+          topdir="$RUNNER_TEMP/rpmbuild"
+          source_root="$RUNNER_TEMP/source/terminal-animations-0.1.0"
+          mkdir -p "$topdir"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} "$source_root"
+          tar --exclude='./.git' --exclude='./dist' --exclude='./build' -cf - . \
+            | tar -C "$source_root" -xf -
+          tar -C "$RUNNER_TEMP/source" -czf \
+            "$topdir/SOURCES/terminal-animations-0.1.0.tar.gz" \
+            terminal-animations-0.1.0
+          rpmbuild -bs --define "_topdir $topdir" packaging/fedora/terminal-animations.spec
+          echo "SOURCE_RPM=$topdir/SRPMS/terminal-animations-*.src.rpm" >> "$GITHUB_ENV"
+
+      - name: Submit source RPM to COPR
+        env:
+          COPR_PROJECT: ${{ vars.COPR_PROJECT }}
+          COPR_USERNAME: ${{ secrets.COPR_USERNAME }}
+          COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+          COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$COPR_PROJECT" || { echo "Set the COPR_PROJECT repository variable." >&2; exit 1; }
+          test -n "$COPR_USERNAME" || { echo "Set the COPR_USERNAME secret." >&2; exit 1; }
+          test -n "$COPR_LOGIN" || { echo "Set the COPR_LOGIN secret." >&2; exit 1; }
+          test -n "$COPR_TOKEN" || { echo "Set the COPR_TOKEN secret." >&2; exit 1; }
+          umask 077
+          mkdir -p "$HOME/.config"
+          {
+            printf '[copr-cli]\n'
+            printf 'username = %s\n' "$COPR_USERNAME"
+            printf 'login = %s\n' "$COPR_LOGIN"
+            printf 'token = %s\n' "$COPR_TOKEN"
+          } > "$HOME/.config/copr"
+          copr-cli build --nowait "$COPR_PROJECT" $SOURCE_RPM

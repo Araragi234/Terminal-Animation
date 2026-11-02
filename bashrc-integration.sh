@@ -42,3 +42,4 @@ ta-list()        { _ta_manager list; }
 ta-default()     { _ta_manager default "$@"; }
 ta-random()      { _ta_manager random; }
 ta-clear-default(){ _ta_manager clear-default; }
+ta-remove()      { _ta_manager remove "$@"; }

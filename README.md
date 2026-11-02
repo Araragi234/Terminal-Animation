@@ -58,6 +58,8 @@ ta-default starfield
 ta-default example.gif
 ta-default random
 ta-random
+ta-remove
+ta-remove example.gif
 ta-clear-default
 ```
 
@@ -66,6 +68,7 @@ ta-clear-default
 - `ta-list` shows installed animations and the active default.
 - `ta-default` opens an interactive selector; a name or GIF path can also be supplied.
 - `ta-random` chooses from Starfield and all imported GIFs each time Fastfetch is run.
+- `ta-remove` opens a selector for an imported GIF; pass a library filename to remove it directly. Removing the active default falls back to Starfield.
 - `ta-clear-default` removes the saved choice and falls back to Starfield.
 
 The detailed command list comes from the Python command parser, rather than a separately maintained help string. New manager subcommands automatically appear in `ta-help` when registered in `manage_animations.py`.

@@ -5,7 +5,7 @@ pauses it while commands run. It supports built-in Starfield and imported GIFs.}
 
 Name:           terminal-animations
 Version:        0.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Animated Fastfetch logos for interactive Bash terminals
 License:        GPL-3.0-or-later
 URL:            https://github.com/Araragi234/Terminal-Animation
@@ -42,7 +42,7 @@ XDG_CONFIG_HOME=%{_builddir}/test-config \
 XDG_DATA_HOME=%{_builddir}/test-data \
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{buildroot}%{_bindir}/ta-manager help
-for command in ta-import ta-list ta-default ta-random ta-clear-default ta-help; do
+for command in ta-import ta-list ta-default ta-random ta-clear-default ta-help ta-remove; do
     env XDG_CONFIG_HOME=%{_builddir}/test-config \
         XDG_DATA_HOME=%{_builddir}/test-data \
         PYTHONPATH=%{buildroot}%{python3_sitelib} \
@@ -57,11 +57,15 @@ done
 %{_bindir}/ta-random
 %{_bindir}/ta-clear-default
 %{_bindir}/ta-help
+%{_bindir}/ta-remove
 %{_bindir}/ta-manager
 %{_bindir}/terminal-animations
 %doc README.md docs/license-notice.md bashrc-integration.sh
 
 %changelog
+* Mon Nov 02 2026 Araragi234 - 0.1.0-3
+- Add interactive removal of imported animations
+
 * Mon Nov 02 2026 Araragi234 - 0.1.0-2
 - Install the ta-* manager aliases as executable commands
 

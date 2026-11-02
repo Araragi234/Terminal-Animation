@@ -24,7 +24,13 @@ python -m twine check dist/*
 
 ## Fedora and Arch packaging
 
-A Fedora COPR project and an Arch AUR PKGBUILD are separate community packaging tasks; neither is automatically created by publishing the Python package. Their package metadata must identify the upstream project and GPL-3.0-or-later license accurately. Continue testing on additional terminal emulators and distributions before advertising broad compatibility.
+Fedora COPR publishing is prepared in `.github/workflows/publish-copr.yml`.
+It requires a COPR project plus the `COPR_PROJECT` repository variable and
+`COPR_USERNAME`, `COPR_LOGIN`, and `COPR_TOKEN` Actions secrets. See
+`docs/copr-publishing.md` for setup and the one-time DNF repository enablement.
+An Arch AUR PKGBUILD remains a separate community packaging task. Continue
+testing on additional terminal emulators and distributions before advertising
+broad compatibility.
 
 ## Compatibility status
 

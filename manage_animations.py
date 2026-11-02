@@ -134,6 +134,57 @@ def choose_interactively() -> None:
         print("Invalid selection; no change made.")
 
 
+def remove_named_animation(value: str) -> None:
+    """Remove an imported GIF by library name or path inside the library."""
+    candidate = Path(value).expanduser()
+    if not candidate.is_absolute() and candidate.parent == Path("."):
+        candidate = GIF_DIR / candidate.name
+    try:
+        resolved = candidate.resolve(strict=True)
+        library = GIF_DIR.resolve()
+        if resolved.parent != library or resolved.suffix.lower() != ".gif" or not resolved.is_file():
+            raise ValueError("only GIFs in your animation library can be removed")
+    except (OSError, RuntimeError) as error:
+        raise SystemExit(f"Animation not found in your library: {value!r}") from error
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+
+    default = get_default_animation() or {}
+    was_default = (
+        default.get("type") == "gif"
+        and Path(default.get("identifier", "")).resolve() == resolved
+    )
+    resolved.unlink()
+    if was_default:
+        clear_default_animation()
+        print(f"Removed {resolved.name}. Starfield is now the fallback default.")
+    else:
+        print(f"Removed {resolved.name}.")
+
+
+def remove_interactively() -> None:
+    """Prompt for an imported GIF to remove, like the default selector."""
+    animations = gif_files()
+    if not animations:
+        print("No imported animations to remove.")
+        return
+    print("Choose an animation to remove:")
+    for index, path in enumerate(animations, 1):
+        print(f"  {index}. {path.name}")
+    print("  0. Cancel")
+    try:
+        number = int(input("Selection: ").strip())
+    except (ValueError, EOFError):
+        print("No change made.")
+        return
+    if number == 0:
+        print("No change made.")
+    elif 1 <= number <= len(animations):
+        remove_named_animation(animations[number - 1].name)
+    else:
+        print("Invalid selection; no change made.")
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the command parser; argparse renders help from this registry.
 
@@ -183,6 +234,14 @@ def build_parser() -> argparse.ArgumentParser:
         "help", aliases=["ta-help"],
         help="show this automatically generated command list"
     )
+    remove_parser = subparsers.add_parser(
+        "remove", aliases=["ta-remove"],
+        help="remove an imported animation from your library",
+        description="Choose an imported GIF to remove, or specify its library name.",
+    )
+    remove_parser.add_argument(
+        "animation", nargs="?", help="library GIF name or path inside the library"
+    )
     return parser
 
 
@@ -197,6 +256,7 @@ def main(argv: list[str] | None = None) -> int:
         "ta-random": "random",
         "ta-clear-default": "clear-default",
         "ta-help": "help",
+        "ta-remove": "remove",
     }
     command = aliases.get(args.command, args.command)
     if command in (None, "help"):
@@ -219,6 +279,11 @@ def main(argv: list[str] | None = None) -> int:
     elif command == "clear-default":
         clear_default_animation()
         print("Saved default cleared. Starfield will be used as the fallback.")
+    elif command == "remove":
+        if args.animation:
+            remove_named_animation(args.animation)
+        else:
+            remove_interactively()
     return 0
 
 
@@ -249,6 +314,10 @@ def clear_default_cli() -> int:
 
 def help_cli() -> int:
     return _alias_entrypoint("help")
+
+
+def remove_cli() -> int:
+    return _alias_entrypoint("remove")
 
 
 if __name__ == "__main__":

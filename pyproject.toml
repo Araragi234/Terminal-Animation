@@ -34,6 +34,7 @@ ta-default = "manage_animations:default_cli"
 ta-random = "manage_animations:random_cli"
 ta-clear-default = "manage_animations:clear_default_cli"
 ta-help = "manage_animations:help_cli"
+ta-remove = "manage_animations:remove_cli"
 
 [tool.setuptools]
 py-modules = ["interactive_shell", "manage_animations"]
